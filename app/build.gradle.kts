@@ -81,4 +81,7 @@ dependencies {
 
     //Google Machine Learning Kit
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+
+    //Google Fonts
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.8")
 }
