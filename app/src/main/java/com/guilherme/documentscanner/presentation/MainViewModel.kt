@@ -46,15 +46,12 @@ class MainViewModel(
             is MainViewModelEvents.OnDocumentAdded -> {
                 viewModelScope.launch {
 
-                    val list = event.value
+                    println(_state.value.data)
+
+                    val list = event.value?.map { it.toString() }
 
                     if (list != null) {
-
-                        _state.update {
-                            it.copy(
-                                uriList = list
-                            )
-                        }
+                        repository.writeObject(list)
                     }
 
                 }

@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface RealmRepository {
     suspend fun fetchData(): Flow<List<Document>>
+    suspend fun writeObject(uriList: List<String>)
 }

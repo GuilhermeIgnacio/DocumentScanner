@@ -53,6 +53,8 @@ import com.guilherme.documentscanner.di.initKoin
 import com.guilherme.documentscanner.presentation.MainViewModel
 import com.guilherme.documentscanner.presentation.MainViewModelEvents
 import com.guilherme.documentscanner.ui.theme.AppTheme
+import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.types.RealmList
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -111,10 +113,10 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                            items(state.uriList) { uri ->
+                            items(state.data) {
                                 AsyncImage(
                                     modifier = Modifier.fillMaxWidth(),
-                                    model = uri,
+                                    model = it.uri[0].toUri(),
                                     contentDescription = null,
                                     contentScale = ContentScale.FillWidth
                                 )
