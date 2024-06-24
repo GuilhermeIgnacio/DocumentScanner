@@ -78,6 +78,7 @@ dependencies {
 
     //ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
+    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
 
     //Google Machine Learning Kit
     implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
@@ -87,5 +88,8 @@ dependencies {
 
     //Extended Icons
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
+
+    //Coil
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
 }
