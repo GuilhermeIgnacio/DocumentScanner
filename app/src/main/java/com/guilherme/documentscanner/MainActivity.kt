@@ -9,17 +9,29 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -35,7 +47,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -114,12 +128,39 @@ class MainActivity : ComponentActivity() {
 
                         LazyColumn(modifier = Modifier.fillMaxWidth()) {
                             items(state.data) {
-                                AsyncImage(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    model = it.uri[0].toUri(),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.FillWidth
-                                )
+
+                                Surface(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                        .clickable { /*Todo: Open Detail Sheet*/ },
+                                    shadowElevation = 16.dp,
+                                    shape = RoundedCornerShape(10)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        AsyncImage(
+                                            modifier = Modifier
+                                                .width(100.dp)
+                                                .height(150.dp)
+                                                .clip(RoundedCornerShape(10)),
+                                            model = it.uri[0].toUri(),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop
+                                        )
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                }
+
+
                             }
                         }
 
