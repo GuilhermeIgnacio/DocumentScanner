@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DocumentScanner</string>
+    <string name="close">Close</string>
+    <string name="snackbar_delete_error">Error When Deleting Document. Please try again.</string>
 </resources>

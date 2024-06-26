@@ -2,9 +2,14 @@ package com.guilherme.documentscanner.presentation
 
 import android.net.Uri
 import android.provider.MediaStore
+import android.provider.Settings.Global.getString
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.guilherme.documentscanner.R
 import com.guilherme.documentscanner.di.Document
 import com.guilherme.documentscanner.di.RealmRepository
 import io.realm.kotlin.ext.realmListOf
@@ -20,7 +25,8 @@ data class MainViewState(
     val uriList: List<Uri> = emptyList(),
     val selectedDocument: Document? = null,
     val isDetailSheetOpen: Boolean = false,
-    val isDropdownMenuOpen: Boolean = false
+    val isDropdownMenuOpen: Boolean = false,
+    val snackbarHostState: SnackbarHostState = SnackbarHostState()
 )
 
 sealed interface MainViewModelEvents {
@@ -29,6 +35,7 @@ sealed interface MainViewModelEvents {
     data object DismissDetailSheet : MainViewModelEvents
     data object OnMenuClick : MainViewModelEvents
     data object DismissDropdownMenu : MainViewModelEvents
+    data class DeleteDocument(val value: Document, val message: String, val label: String) : MainViewModelEvents
 }
 
 class MainViewModel(
@@ -104,6 +111,41 @@ class MainViewModel(
                     _state.update {
                         it.copy(
                             isDropdownMenuOpen = false
+                        )
+                    }
+                }
+            }
+
+            is MainViewModelEvents.DeleteDocument -> {
+                viewModelScope.launch {
+
+                    val document = _state.value.selectedDocument
+
+                    if (document != null) {
+
+                        try {
+
+                            repository.deleteObject(document)
+
+                            _state.update {
+                                it.copy(
+                                    selectedDocument = null,
+                                    isDetailSheetOpen = false,
+                                    isDropdownMenuOpen = false
+                                )
+                            }
+                        } catch (e: Exception) {
+                            _state.value.snackbarHostState.showSnackbar(
+                                message = event.message,
+                                actionLabel = event.label,
+                                duration = SnackbarDuration.Indefinite
+                            )
+                        }
+                    } else {
+                        _state.value.snackbarHostState.showSnackbar(
+                            message = event.message,
+                            actionLabel = event.label,
+                            duration = SnackbarDuration.Indefinite
                         )
                     }
                 }

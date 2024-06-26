@@ -28,4 +28,11 @@ class RealmRepositoryImpl(
         }
 
     }
+
+    override suspend fun deleteObject(document: Document) {
+        realm.write {
+            val documentToDelete = query<Document>("_id == $0", document._id).find().first()
+            delete(documentToDelete)
+        }
+    }
 }

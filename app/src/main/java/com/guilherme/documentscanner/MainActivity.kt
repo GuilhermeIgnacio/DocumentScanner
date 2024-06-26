@@ -1,11 +1,14 @@
 package com.guilherme.documentscanner
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings.Global.getString
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -59,6 +62,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,6 +76,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -285,6 +290,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> Unit) {
     AnimatedVisibility(visible = state.isDetailSheetOpen) {
 
@@ -292,103 +298,117 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding(),
-            ) {
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { onEvent(MainViewModelEvents.DismissDetailSheet) }
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Return Button"
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Column {
-
-                        IconButton(
-                            onClick = { onEvent(MainViewModelEvents.OnMenuClick) }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.MoreVert,
-                                contentDescription = "Open Dropdown Menu",
-                            )
-                        }
-                        DropdownMenu(
-                            modifier = Modifier.align(Alignment.End),
-                            expanded = state.isDropdownMenuOpen,
-                            onDismissRequest = { onEvent(MainViewModelEvents.DismissDropdownMenu) }
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = "Edit Name",
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                },
-                                onClick = {
-                                    /*TODO: Edit Document Alert Dialog*/
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = "Edit Document"
-                                    )
-                                }
-                            )
-
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = "Delete",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = Color.Red
-                                    )
-                                },
-                                onClick = {
-                                    /*TODO: Delete Document*/
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete Document",
-                                        tint = Color.Red
-                                    )
-                                }
-                            )
-                        }
-                    }
-                }
-
-
-
-                LazyColumn(
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                snackbarHost = { state.snackbarHostState }
+            ) { _ ->
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 2.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .statusBarsPadding(),
                 ) {
-                    state.selectedDocument?.let {
-                        items(it.uri) {
 
-                            AsyncImage(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(2)),
-                                model = it,
-                                contentDescription = null,
-                                contentScale = ContentScale.FillWidth
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = { onEvent(MainViewModelEvents.DismissDetailSheet) }
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = "Return Button"
                             )
+                        }
 
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Column {
+
+                            IconButton(
+                                onClick = { onEvent(MainViewModelEvents.OnMenuClick) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.MoreVert,
+                                    contentDescription = "Open Dropdown Menu",
+                                )
+                            }
+                            DropdownMenu(
+                                modifier = Modifier.align(Alignment.End),
+                                expanded = state.isDropdownMenuOpen,
+                                onDismissRequest = { onEvent(MainViewModelEvents.DismissDropdownMenu) }
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = "Edit Name",
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    },
+                                    onClick = {
+                                        /*TODO: Edit Document Alert Dialog*/
+                                    },
+                                    trailingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = "Edit Document"
+                                        )
+                                    }
+                                )
+
+                                val snackBarMessage = stringResource(R.string.snackbar_delete_error)
+                                val snackBarLabel = stringResource(id = R.string.close)
+
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = "Delete",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = Color.Red
+                                        )
+                                    },
+                                    onClick = {
+                                        onEvent(
+                                            MainViewModelEvents.DeleteDocument(
+                                                value = state.selectedDocument!!,
+                                                message = snackBarMessage,
+                                                label = snackBarLabel
+                                            )
+                                        )
+                                    },
+                                    trailingIcon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = "Delete Document",
+                                            tint = Color.Red
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 2.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        state.selectedDocument?.let {
+                            items(it.uri) {
+
+                                AsyncImage(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(2)),
+                                    model = it,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.FillWidth
+                                )
+
+                            }
                         }
                     }
                 }
