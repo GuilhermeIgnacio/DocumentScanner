@@ -40,12 +40,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,6 +72,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -290,14 +298,78 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                     .statusBarsPadding(),
             ) {
 
-                IconButton(
-                    onClick = { onEvent(MainViewModelEvents.DismissDetailSheet) }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Return Button"
-                    )
+                    IconButton(
+                        onClick = { onEvent(MainViewModelEvents.DismissDetailSheet) }
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = "Return Button"
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Column {
+
+                        IconButton(
+                            onClick = { onEvent(MainViewModelEvents.OnMenuClick) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.MoreVert,
+                                contentDescription = "Open Dropdown Menu",
+                            )
+                        }
+                        DropdownMenu(
+                            modifier = Modifier.align(Alignment.End),
+                            expanded = state.isDropdownMenuOpen,
+                            onDismissRequest = { onEvent(MainViewModelEvents.DismissDropdownMenu) }
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Edit Name",
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                },
+                                onClick = {
+                                    /*TODO: Edit Document Alert Dialog*/
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "Edit Document"
+                                    )
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = "Delete",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = Color.Red
+                                    )
+                                },
+                                onClick = {
+                                    /*TODO: Delete Document*/
+                                },
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Delete Document",
+                                        tint = Color.Red
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
+
+
 
                 LazyColumn(
                     modifier = Modifier

@@ -19,13 +19,16 @@ data class MainViewState(
     val data: List<Document> = emptyList(),
     val uriList: List<Uri> = emptyList(),
     val selectedDocument: Document? = null,
-    val isDetailSheetOpen: Boolean = false
+    val isDetailSheetOpen: Boolean = false,
+    val isDropdownMenuOpen: Boolean = false
 )
 
 sealed interface MainViewModelEvents {
     data class OnDocumentAdded(val value: List<Uri>?) : MainViewModelEvents
     data class OnDocumentClick(val value: Document) : MainViewModelEvents
     data object DismissDetailSheet : MainViewModelEvents
+    data object OnMenuClick : MainViewModelEvents
+    data object DismissDropdownMenu : MainViewModelEvents
 }
 
 class MainViewModel(
@@ -86,6 +89,25 @@ class MainViewModel(
                 }
             }
 
+            MainViewModelEvents.OnMenuClick -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isDropdownMenuOpen = true
+                        )
+                    }
+                }
+            }
+
+            MainViewModelEvents.DismissDropdownMenu -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isDropdownMenuOpen = false
+                        )
+                    }
+                }
+            }
         }
     }
 
