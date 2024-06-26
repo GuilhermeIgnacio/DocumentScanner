@@ -17,11 +17,15 @@ import java.io.FileOutputStream
 
 data class MainViewState(
     val data: List<Document> = emptyList(),
-    val uriList: List<Uri> = emptyList()
+    val uriList: List<Uri> = emptyList(),
+    val selectedDocument: Document? = null,
+    val isDetailSheetOpen: Boolean = false
 )
 
 sealed interface MainViewModelEvents {
     data class OnDocumentAdded(val value: List<Uri>?) : MainViewModelEvents
+    data class OnDocumentClick(val value: Document) : MainViewModelEvents
+    data object DismissDetailSheet : MainViewModelEvents
 }
 
 class MainViewModel(
@@ -59,6 +63,29 @@ class MainViewModel(
 
                 }
             }
+
+            is MainViewModelEvents.OnDocumentClick -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            selectedDocument = event.value,
+                            isDetailSheetOpen = true
+                        )
+                    }
+                }
+            }
+
+            MainViewModelEvents.DismissDetailSheet -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            selectedDocument = null,
+                            isDetailSheetOpen = false
+                        )
+                    }
+                }
+            }
+
         }
     }
 

@@ -15,9 +15,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +38,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material3.Button
@@ -44,11 +48,13 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -72,6 +78,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.guilherme.documentscanner.di.initKoin
 import com.guilherme.documentscanner.presentation.MainViewModel
 import com.guilherme.documentscanner.presentation.MainViewModelEvents
+import com.guilherme.documentscanner.presentation.MainViewState
 import com.guilherme.documentscanner.ui.theme.AppTheme
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.types.RealmList
@@ -124,32 +131,53 @@ class MainActivity : ComponentActivity() {
                                 result.getPdf()?.let { pdf ->
                                     val pdfUri = pdf.getUri()
 
-                                    val inputStream = this@MainActivity.contentResolver.openInputStream(pdfUri)
+                                    val inputStream =
+                                        this@MainActivity.contentResolver.openInputStream(pdfUri)
                                     val pdfBytes = inputStream?.readBytes()
 
                                     val contentValues = ContentValues().apply {
-                                        put(MediaStore.MediaColumns.DISPLAY_NAME, "scanned_document_${System.currentTimeMillis()}.pdf")
+                                        put(
+                                            MediaStore.MediaColumns.DISPLAY_NAME,
+                                            "scanned_document_${System.currentTimeMillis()}.pdf"
+                                        )
                                         put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-                                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS)
+                                        put(
+                                            MediaStore.MediaColumns.RELATIVE_PATH,
+                                            Environment.DIRECTORY_DOCUMENTS
+                                        )
                                     }
 
                                     val resolver = this@MainActivity.contentResolver
-                                    val uri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
+                                    val uri = resolver.insert(
+                                        MediaStore.Files.getContentUri("external"),
+                                        contentValues
+                                    )
 
                                     uri?.let {
                                         resolver.openOutputStream(it)?.use { outputStream ->
                                             outputStream.write(pdfBytes)
                                             outputStream.close()
-                                            Toast.makeText(this@MainActivity, "PDF salvo em: $uri", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "PDF salvo em: $uri",
+                                                Toast.LENGTH_LONG
+                                            ).show()
                                         } ?: run {
-                                            Toast.makeText(this@MainActivity, "Erro ao salvar PDF: OutputStream nulo", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Erro ao salvar PDF: OutputStream nulo",
+                                                Toast.LENGTH_LONG
+                                            ).show()
                                         }
                                     } ?: run {
-                                        Toast.makeText(this@MainActivity, "Erro ao salvar PDF: URI nulo", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Erro ao salvar PDF: URI nulo",
+                                            Toast.LENGTH_LONG
+                                        ).show()
                                     }
 
                                 }
-
 
 
                             }
@@ -177,7 +205,9 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(8.dp)
-                                        .clickable { /*Todo: Open Detail Sheet*/ },
+                                        .clickable {
+                                            onEvent(MainViewModelEvents.OnDocumentClick(it))
+                                        },
                                     shadowElevation = 16.dp,
                                     shape = RoundedCornerShape(10)
                                 ) {
@@ -236,8 +266,62 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+                DocumentDetailSheet(state = state, onEvent = onEvent)
+
             }
 
         }
+    }
+
+}
+
+@Composable
+fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> Unit) {
+    AnimatedVisibility(visible = state.isDetailSheetOpen) {
+
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+            ) {
+
+                IconButton(
+                    onClick = { onEvent(MainViewModelEvents.DismissDetailSheet) }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Return Button"
+                    )
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 2.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    state.selectedDocument?.let {
+                        items(it.uri) {
+
+                            AsyncImage(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(2)),
+                                model = it,
+                                contentDescription = null,
+                                contentScale = ContentScale.FillWidth
+                            )
+
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
