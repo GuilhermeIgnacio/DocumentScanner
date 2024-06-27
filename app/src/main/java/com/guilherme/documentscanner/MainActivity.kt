@@ -51,6 +51,7 @@ import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -65,6 +66,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -356,9 +358,6 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                     }
                                 )
 
-                                val snackBarMessage = stringResource(R.string.snackbar_delete_error)
-                                val snackBarLabel = stringResource(id = R.string.close)
-
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -368,13 +367,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                         )
                                     },
                                     onClick = {
-                                        onEvent(
-                                            MainViewModelEvents.DeleteDocument(
-                                                value = state.selectedDocument!!,
-                                                message = snackBarMessage,
-                                                label = snackBarLabel
-                                            )
-                                        )
+                                              onEvent(MainViewModelEvents.OnDeleteClick)
                                     },
                                     trailingIcon = {
                                         Icon(
@@ -413,6 +406,58 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                     }
                 }
             }
+        }
+
+        if (state.isDeleteDialogOpen) {
+            AlertDialog(
+                onDismissRequest = {
+                    onEvent(MainViewModelEvents.DismissDeleteDialog)
+                },
+                dismissButton = {
+                    TextButton(onClick = { onEvent(MainViewModelEvents.DismissDeleteDialog) }) {
+                        Text(
+                            text = stringResource(R.string.dialog_cancel_delete_btn),
+                        )
+                    }
+                },
+                confirmButton = {
+
+                    val snackBarMessage = stringResource(R.string.snackbar_delete_error)
+                    val snackBarLabel = stringResource(id = R.string.close)
+
+                    TextButton(onClick = {
+                        onEvent(
+                            MainViewModelEvents.DeleteDocument(
+                                value = state.selectedDocument!!,
+                                message = snackBarMessage,
+                                label = snackBarLabel
+                            )
+                        )
+                    }) {
+                        Text(
+                            text = stringResource(R.string.dialog_confirm_delete_btn),
+                            color = Color.Red
+                        )
+                    }
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.dialog_title_delete),
+                        color = Color.Red,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.delete_icon_desc),
+                        tint = Color.Red
+                    )
+                },
+                text = {
+                    Text(text = stringResource(R.string.dialog_confirm_delete_message))
+                }
+            )
         }
 
     }

@@ -26,7 +26,8 @@ data class MainViewState(
     val selectedDocument: Document? = null,
     val isDetailSheetOpen: Boolean = false,
     val isDropdownMenuOpen: Boolean = false,
-    val snackbarHostState: SnackbarHostState = SnackbarHostState()
+    val snackbarHostState: SnackbarHostState = SnackbarHostState(),
+    val isDeleteDialogOpen: Boolean = false
 )
 
 sealed interface MainViewModelEvents {
@@ -35,7 +36,10 @@ sealed interface MainViewModelEvents {
     data object DismissDetailSheet : MainViewModelEvents
     data object OnMenuClick : MainViewModelEvents
     data object DismissDropdownMenu : MainViewModelEvents
-    data class DeleteDocument(val value: Document, val message: String, val label: String) : MainViewModelEvents
+    data object OnDeleteClick : MainViewModelEvents
+    data object DismissDeleteDialog : MainViewModelEvents
+    data class DeleteDocument(val value: Document, val message: String, val label: String) :
+        MainViewModelEvents
 }
 
 class MainViewModel(
@@ -131,7 +135,8 @@ class MainViewModel(
                                 it.copy(
                                     selectedDocument = null,
                                     isDetailSheetOpen = false,
-                                    isDropdownMenuOpen = false
+                                    isDropdownMenuOpen = false,
+                                    isDeleteDialogOpen = false
                                 )
                             }
                         } catch (e: Exception) {
@@ -146,6 +151,26 @@ class MainViewModel(
                             message = event.message,
                             actionLabel = event.label,
                             duration = SnackbarDuration.Indefinite
+                        )
+                    }
+                }
+            }
+
+            MainViewModelEvents.OnDeleteClick -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isDeleteDialogOpen = true
+                        )
+                    }
+                }
+            }
+
+            MainViewModelEvents.DismissDeleteDialog -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isDeleteDialogOpen = false
                         )
                     }
                 }
