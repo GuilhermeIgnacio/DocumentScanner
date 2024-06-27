@@ -10,6 +10,7 @@ import org.mongodb.kbson.ObjectId
 class Document(): RealmObject {
 
     @PrimaryKey var _id = ObjectId()
+    var name: String = ""
     var uri: RealmList<String> = realmListOf()
 
 }

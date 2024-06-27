@@ -8,4 +8,5 @@ interface RealmRepository {
     suspend fun fetchData(): Flow<List<Document>>
     suspend fun writeObject(uriList: List<String>)
     suspend fun deleteObject(document: Document)
+    suspend fun nameObject(document: Document, name: String)
 }

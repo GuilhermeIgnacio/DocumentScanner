@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.guilherme.documentscanner.R
 import com.guilherme.documentscanner.di.Document
 import com.guilherme.documentscanner.di.RealmRepository
+import io.realm.kotlin.ext.copyFromRealm
 import io.realm.kotlin.ext.realmListOf
 import io.realm.kotlin.query.RealmResults
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,9 @@ data class MainViewState(
     val isDetailSheetOpen: Boolean = false,
     val isDropdownMenuOpen: Boolean = false,
     val snackbarHostState: SnackbarHostState = SnackbarHostState(),
-    val isDeleteDialogOpen: Boolean = false
+    val isDeleteDialogOpen: Boolean = false,
+    val isEditDialogOpen: Boolean = false,
+    val documentName: String? = null
 )
 
 sealed interface MainViewModelEvents {
@@ -40,6 +43,11 @@ sealed interface MainViewModelEvents {
     data object DismissDeleteDialog : MainViewModelEvents
     data class DeleteDocument(val value: Document, val message: String, val label: String) :
         MainViewModelEvents
+
+    data object OnEditClick : MainViewModelEvents
+    data object DismissEditDialog : MainViewModelEvents
+    data class OnNameChanged(val value: String) : MainViewModelEvents
+    data object SaveChanges : MainViewModelEvents
 }
 
 class MainViewModel(
@@ -172,6 +180,73 @@ class MainViewModel(
                         it.copy(
                             isDeleteDialogOpen = false
                         )
+                    }
+                }
+            }
+
+            MainViewModelEvents.OnEditClick -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isEditDialogOpen = true,
+                            documentName = _state.value.selectedDocument?.name
+                        )
+                    }
+                }
+            }
+
+            MainViewModelEvents.DismissEditDialog -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isEditDialogOpen = false
+                        )
+                    }
+                }
+            }
+
+            is MainViewModelEvents.OnNameChanged -> {
+                viewModelScope.launch {
+
+                    _state.update {
+                        it.copy(
+                            documentName = event.value
+                        )
+                    }
+                }
+            }
+
+            MainViewModelEvents.SaveChanges -> {
+                viewModelScope.launch {
+
+                    val document = _state.value.selectedDocument
+                    val documentName = _state.value.documentName
+
+
+
+                    if (document != null && documentName != null) {
+
+                        val nDocument = Document().apply {
+                            _id = document._id
+                            name = documentName
+                            uri = document.uri
+                        }
+
+                        try {
+                            repository.nameObject(document = document, name = documentName)
+
+                            _state.update {
+                                it.copy(
+                                    documentName = null,
+                                    isEditDialogOpen = false,
+                                    selectedDocument = nDocument
+                                )
+                            }
+                        } catch (e: Exception) {
+                            _state.value.snackbarHostState.showSnackbar(
+                                message = "ERROR: $e",
+                            )
+                        }
                     }
                 }
             }

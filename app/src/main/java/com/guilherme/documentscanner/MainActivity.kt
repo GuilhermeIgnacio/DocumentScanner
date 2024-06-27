@@ -63,6 +63,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -325,6 +326,13 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
 
                         Spacer(modifier = Modifier.weight(1f))
 
+                        Text(
+                            text = state.selectedDocument?.name ?: "",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
                         Column {
 
                             IconButton(
@@ -348,7 +356,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                         )
                                     },
                                     onClick = {
-                                        /*TODO: Edit Document Alert Dialog*/
+                                        onEvent(MainViewModelEvents.OnEditClick)
                                     },
                                     trailingIcon = {
                                         Icon(
@@ -367,7 +375,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                         )
                                     },
                                     onClick = {
-                                              onEvent(MainViewModelEvents.OnDeleteClick)
+                                        onEvent(MainViewModelEvents.OnDeleteClick)
                                     },
                                     trailingIcon = {
                                         Icon(
@@ -380,8 +388,6 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                             }
                         }
                     }
-
-
 
                     LazyColumn(
                         modifier = Modifier
@@ -456,6 +462,40 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                 },
                 text = {
                     Text(text = stringResource(R.string.dialog_confirm_delete_message))
+                }
+            )
+        }
+        if (state.isEditDialogOpen) {
+            AlertDialog(
+                onDismissRequest = { onEvent(MainViewModelEvents.DismissEditDialog) },
+                dismissButton = {
+                    TextButton(onClick = { onEvent(MainViewModelEvents.DismissEditDialog) }) {
+                        Text(text = "Cancel")
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { onEvent(MainViewModelEvents.SaveChanges) }) {
+                        Text(text = "Save Changes")
+                    }
+                },
+                icon = {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                },
+                title = {
+                    Text(text = "Edit")
+                },
+                text = {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(text = "Set a name for this document")
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = state.documentName ?: "",
+                            maxLines = 1,
+                            onValueChange = {
+                                onEvent(MainViewModelEvents.OnNameChanged(it))
+                            },
+                        )
+                    }
                 }
             )
         }
