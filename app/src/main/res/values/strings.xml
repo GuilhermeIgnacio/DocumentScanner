@@ -7,4 +7,17 @@
     <string name="dialog_title_delete">Delete Document</string>
     <string name="dialog_confirm_delete_btn">Delete</string>
     <string name="dialog_cancel_delete_btn">Cancel</string>
+    <string name="open_dropdown_men_desc">Open Dropdown Menu</string>
+    <string name="set_name_dropdown_item">Set Name</string>
+    <string name="edit_name_dropdown_item">Edit Name</string>
+    <string name="edit_document_desc">Edit Document</string>
+    <string name="delete_dropdown_item">Delete</string>
+    <string name="delete_document_icon_desc">Delete Document</string>
+    <string name="save_changes_dialog">Save Changes</string>
+    <string name="document_name_dialog">Document Name</string>
+    <string name="edit_dialog_title">Edit</string>
+    <string name="cancel_dialog_dismiss_button">Cancel</string>
+    <string name="open_dropdown_menu_desc">Open Dropdown Menu</string>
+    <string name="return_button_desc">Return Button</string>
+    <string name="scan_icon_desc">Scan Icon</string>
 </resources>

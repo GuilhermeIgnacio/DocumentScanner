@@ -277,7 +277,7 @@ class MainActivity : ComponentActivity() {
                             Icon(
                                 modifier = Modifier.size(32.dp),
                                 painter = painterResource(id = R.drawable.outline_scan_24),
-                                contentDescription = "Scan Icon"
+                                contentDescription = stringResource(R.string.scan_icon_desc)
                             )
                         }
                     }
@@ -320,7 +320,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                         ) {
                             Icon(
                                 Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = "Return Button"
+                                contentDescription = stringResource(R.string.return_button_desc)
                             )
                         }
 
@@ -328,7 +328,9 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
 
                         Text(
                             text = state.selectedDocument?.name ?: "",
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1
                         )
 
                         Spacer(modifier = Modifier.weight(1f))
@@ -340,7 +342,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.MoreVert,
-                                    contentDescription = "Open Dropdown Menu",
+                                    contentDescription = stringResource(R.string.open_dropdown_menu_desc),
                                 )
                             }
                             DropdownMenu(
@@ -351,7 +353,9 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            text = "Edit Name",
+                                            text = if (state.selectedDocument?.name.isNullOrEmpty()) stringResource(
+                                                R.string.set_name_dropdown_item
+                                            ) else stringResource(R.string.edit_name_dropdown_item),
                                             style = MaterialTheme.typography.bodyLarge
                                         )
                                     },
@@ -361,7 +365,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                     trailingIcon = {
                                         Icon(
                                             imageVector = Icons.Default.Edit,
-                                            contentDescription = "Edit Document"
+                                            contentDescription = stringResource(R.string.edit_document_desc)
                                         )
                                     }
                                 )
@@ -369,7 +373,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            text = "Delete",
+                                            text = stringResource(R.string.delete_dropdown_item),
                                             style = MaterialTheme.typography.bodyLarge,
                                             color = Color.Red
                                         )
@@ -380,7 +384,7 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                                     trailingIcon = {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
-                                            contentDescription = "Delete Document",
+                                            contentDescription = stringResource(R.string.delete_document_icon_desc),
                                             tint = Color.Red
                                         )
                                     }
@@ -470,23 +474,23 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                 onDismissRequest = { onEvent(MainViewModelEvents.DismissEditDialog) },
                 dismissButton = {
                     TextButton(onClick = { onEvent(MainViewModelEvents.DismissEditDialog) }) {
-                        Text(text = "Cancel")
+                        Text(text = stringResource(R.string.cancel_dialog_dismiss_button))
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = { onEvent(MainViewModelEvents.SaveChanges) }) {
-                        Text(text = "Save Changes")
+                        Text(text = stringResource(R.string.save_changes_dialog))
                     }
                 },
                 icon = {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = null)
                 },
                 title = {
-                    Text(text = "Edit")
+                    Text(text = stringResource(R.string.edit_dialog_title))
                 },
                 text = {
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = "Set a name for this document")
+                        Text(text = stringResource(R.string.document_name_dialog))
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
                             value = state.documentName ?: "",
