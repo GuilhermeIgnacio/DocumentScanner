@@ -20,4 +20,6 @@
     <string name="open_dropdown_menu_desc">Open Dropdown Menu</string>
     <string name="return_button_desc">Return Button</string>
     <string name="scan_icon_desc">Scan Icon</string>
+    <string name="pdf_stored_at">PDF stored at: %1$s</string>
+    <string name="error_storing_pdf">Error storing PDF</string>
 </resources>
