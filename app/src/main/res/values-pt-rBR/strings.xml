@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocumentScanner</string>
+    <string name="app_name">Scanner de Documentos</string>
     <string name="close">Fechar</string>
     <string name="snackbar_delete_error">Erro ao deletar o documento.</string>
     <string name="delete_icon_desc">ícone de deletar</string>
