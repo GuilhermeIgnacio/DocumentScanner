@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DocumentScanner</string>
+    <string name="close">Fechar</string>
+    <string name="snackbar_delete_error">Erro ao deletar o documento.</string>
+    <string name="delete_icon_desc">ícone de deletar</string>
+    <string name="dialog_confirm_delete_message">Tem certeza que deseja excluir este documento? Esta ação não pode ser desfeita</string>
+    <string name="dialog_title_delete">Excluir Documento</string>
+    <string name="dialog_confirm_delete_btn">Excluir</string>
+    <string name="dialog_cancel_delete_btn">Cancelar</string>
+    <string name="open_dropdown_men_desc">Abrir menu em cascata</string>
+    <string name="set_name_dropdown_item">Definir Nome</string>
+    <string name="edit_name_dropdown_item">Editar Nome</string>
+    <string name="edit_document_desc">Editar Documento</string>
+    <string name="delete_dropdown_item">Excluir</string>
+    <string name="delete_document_icon_desc">Excluir Documento</string>
+    <string name="save_changes_dialog">Salvar Alterações</string>
+    <string name="document_name_dialog">Nome do Documento</string>
+    <string name="edit_dialog_title">Editar</string>
+    <string name="cancel_dialog_dismiss_button">Cancelar</string>
+    <string name="open_dropdown_menu_desc">Abrir menu em cascata</string>
+    <string name="return_button_desc">Botão de Voltar</string>
+    <string name="scan_icon_desc">ícone de Scanear</string>
+    <string name="pdf_stored_at">PDF Armazenada em %1$s</string>
+    <string name="error_storing_pdf">Erro ao armazenar o PDF</string>
+    <string name="edit_icon_desc">Ícone de Editar</string>
+</resources>
