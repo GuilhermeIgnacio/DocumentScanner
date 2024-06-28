@@ -35,7 +35,7 @@ fun EditDetailSheet(
                 }
             },
             icon = {
-                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                Icon(imageVector = Icons.Default.Edit, contentDescription = stringResource(R.string.edit_icon_desc))
             },
             title = {
                 Text(text = stringResource(R.string.edit_dialog_title))
