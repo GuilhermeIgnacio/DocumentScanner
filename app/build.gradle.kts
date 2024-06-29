@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    id ("io.realm.kotlin")
+    id("io.realm.kotlin")
 }
 
 android {
@@ -69,30 +69,30 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //Koin(Dependency Injection)
-    implementation(platform("io.insert-koin:koin-bom:3.6.0-wasm-alpha2"))
-    implementation("io.insert-koin:koin-android")
-    implementation("io.insert-koin:koin-androidx-compose")
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 
     //Atlas Device Sdk(Local Storage)
-    implementation("io.realm.kotlin:library-base:1.16.0")
+    implementation(libs.library.base)
 
     //ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     //Google Machine Learning Kit
-    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+    implementation(libs.play.services.mlkit.document.scanner)
 
     //Google Fonts
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.8")
+    implementation(libs.androidx.ui.text.google.fonts)
 
     //Extended Icons
-    implementation("androidx.compose.material:material-icons-extended:1.6.8")
+    implementation(libs.androidx.material.icons.extended)
 
     //Coil
-    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation(libs.coil.compose)
 
     //Splash Screen
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.androidx.core.splashscreen)
 
 }
