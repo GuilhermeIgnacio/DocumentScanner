@@ -2,7 +2,12 @@ package com.guilherme.documentscanner.presentation.components
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,18 +32,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.guilherme.documentscanner.R
 import com.guilherme.documentscanner.presentation.MainViewModelEvents
 import com.guilherme.documentscanner.presentation.MainViewState
+import kotlin.math.max
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -141,24 +156,58 @@ fun DocumentDetailSheet(state: MainViewState, onEvent: (MainViewModelEvents) -> 
                         }
                     }
 
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 2.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        state.selectedDocument?.let {
-                            items(it.uri) {
+                    var scale by remember { mutableStateOf(1f) }
+                    var rotation by remember { mutableStateOf(0f) }
+                    var offset by remember { mutableStateOf(Offset.Zero) }
+                    val transformableState =
+                        rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+                            scale = max(1f, scale * zoomChange)
+                            offset += offsetChange
+                        }
 
-                                AsyncImage(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clip(RoundedCornerShape(2)),
-                                    model = it,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.FillWidth
+                    var boxSize by remember { mutableStateOf(IntSize.Zero) }
+
+                    Box(
+                        Modifier
+                            .onGloballyPositioned { layoutCoordinates ->
+                                boxSize = layoutCoordinates.size
+                            }
+                            .graphicsLayer(
+                                scaleX = scale,
+                                scaleY = scale,
+                                rotationZ = rotation,
+                                translationX = offset.x.coerceIn(
+                                    -((scale - 1) * boxSize.width / 2),
+                                    (scale - 1) * boxSize.width / 2
+                                ),
+                                translationY = offset.y.coerceIn(
+                                    -((scale - 1) * boxSize.height / 2),
+                                    (scale - 1) * boxSize.height / 2
                                 )
+                            )
+                            .transformable(state = transformableState)
+                            .fillMaxSize()
+                    ) {
 
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 2.dp, start = 8.dp, end = 8.dp, bottom = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            state.selectedDocument?.let {
+                                items(it.uri) {
+
+                                    AsyncImage(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(2)),
+                                        model = it,
+                                        contentDescription = null,
+                                        contentScale = ContentScale.FillWidth
+                                    )
+
+                                }
                             }
                         }
                     }
