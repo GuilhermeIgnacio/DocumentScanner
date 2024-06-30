@@ -54,8 +54,6 @@ class MainActivity : ComponentActivity() {
             )
         )
 
-        initKoin()
-
         setContent {
 
             val mainViewModel: MainViewModel = koinViewModel()
