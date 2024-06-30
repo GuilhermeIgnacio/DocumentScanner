@@ -1,6 +1,7 @@
 package com.guilherme.documentscanner.presentation.components
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
@@ -116,7 +117,14 @@ fun AppScreen(
                         }
                         .addOnFailureListener {
                             println(it)
-                            //Todo: Add an error message
+                            Toast.makeText(
+                                context,
+                                context.getString(
+                                    R.string.error_when_launching_scanner_toast_message,
+                                    it
+                                ),
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                 },
                 shape = CircleShape,

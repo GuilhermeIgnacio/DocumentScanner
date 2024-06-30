@@ -24,4 +24,5 @@
     <string name="pdf_stored_at">PDF Armazenada em %1$s</string>
     <string name="error_storing_pdf">Erro ao armazenar o PDF</string>
     <string name="edit_icon_desc">Ícone de Editar</string>
+    <string name="error_when_launching_scanner_toast_message">Erro ao iniciar o scanner %1$s</string>
 </resources>
